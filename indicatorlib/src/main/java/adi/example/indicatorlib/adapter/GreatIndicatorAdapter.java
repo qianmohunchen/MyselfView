@@ -1,6 +1,7 @@
 package adi.example.indicatorlib.adapter;
 
 import adi.example.indicatorlib.title.AbstractTitleConfig;
+import adi.example.indicatorlib.title.badge.BadgeConfig;
 
 public abstract class GreatIndicatorAdapter<T extends AbstractTitleConfig> extends BaseIndicatorAdapter {
 
@@ -13,4 +14,12 @@ public abstract class GreatIndicatorAdapter<T extends AbstractTitleConfig> exten
 
     public abstract String getTitleName(int position);
 
+
+    public BadgeConfig bindBageConfig(int position) {
+        return null;
+    }
+
+    public int getBadgeNumer(int position) {
+        return 0;
+    }
 }

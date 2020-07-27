@@ -51,4 +51,5 @@ public abstract class BaseIndicatorAdapter<T extends AbstractIndicatorConfig> {
     }
 
     protected abstract T bindIndicatorConfig();
+
 }

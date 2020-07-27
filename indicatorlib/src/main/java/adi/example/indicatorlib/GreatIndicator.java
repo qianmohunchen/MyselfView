@@ -174,7 +174,7 @@ public class GreatIndicator extends FrameLayout implements View.OnClickListener,
             mContentContainer.addView(mTitleContainer);
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                    null == titleConfig ? 0 : LayoutParams.WRAP_CONTENT);
+                    null == titleConfig ? 0 : LayoutParams.MATCH_PARENT);
             int count = mAdapter.getCount();
             for (int i = 0; i < count; i++) {
                 TextTitleView textTitleView = new TextTitleView(getContext());

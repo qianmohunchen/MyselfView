@@ -1,17 +1,14 @@
 package adi.example.indicatorlib.title;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 
-import adi.example.indicatorlib.R;
 import adi.example.indicatorlib.adapter.GreatIndicatorAdapter;
 import adi.example.indicatorlib.listener.OnScrollResultListener;
+import adi.example.indicatorlib.title.badge.BadgeConfig;
 
 /**
  * 纯文字标题
@@ -60,15 +57,31 @@ public class TextTitleView extends View implements OnScrollResultListener {
 
     private Context mContext;
 
-    private Paint mBitmapPaint;
+    /**
+     * 角标配置
+     */
+    private BadgeConfig mBadgeConfig;
+    /**
+     * 角标画笔
+     */
+    private Paint mBadgePaint;
+    /**
+     * 角标数字
+     */
+    private String mBadgeNumber;
+    /**
+     * 角标区域
+     */
+    private RectF mBadgeRect;
+    /**
+     * 角标数字
+     */
+    private int mBadgeNumer;
+
 
     public TextTitleView(Context context) {
         super(context);
-        mContext=context;
-    }
-
-    public  Bitmap getBitmapFormResources(int resId){
-        return BitmapFactory.decodeResource(mContext.getResources(),resId);
+        mContext = context;
     }
 
     public void init(GreatIndicatorAdapter adapter, int position) {
@@ -96,9 +109,13 @@ public class TextTitleView extends View implements OnScrollResultListener {
         //还原设置
         mPaint.setTextSize(mConfig.getNormalSize());
 
-        //图片设置
-        mBitmapPaint=new Paint();
+        mBadgePaint = new Paint();
+        mBadgePaint.setAntiAlias(true);
+        mBadgeConfig = adapter.bindBageConfig(position);
+        mBadgeNumer = adapter.getBadgeNumer(position);
+
     }
+
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -106,8 +123,8 @@ public class TextTitleView extends View implements OnScrollResultListener {
         int x = (getWidth() - getTxtWidth()) / 2;
         int y = (int) ((getHeight() - fontMetrics.bottom - fontMetrics.top) / 2);
         canvas.drawText(mName, x, y, mPaint);
-//        canvas.drawBitmap(getBitmapFormResources(R.mipmap.btn_canteen_add),new Matrix(),mBitmapPaint);
 
+        drawBadge(canvas);
         //画clip层
 //        if (mConfig.isUseColorClip()) {
 //            canvas.save();
@@ -122,18 +139,29 @@ public class TextTitleView extends View implements OnScrollResultListener {
 //        }
     }
 
-    /**
-     * 角标画笔
-     */
-    private Paint mBadgePaint;
-    /**
-     * 角标数字
-     */
-    private String mBadgeNumber;
-    /**
-     * 角标区域
-     */
-    private RectF mBadgeRect;
+    private void drawBadge(Canvas canvas) {
+        if (mBadgeConfig == null) {
+            return;
+        }
+        float cx, cy;
+        float radius = mBadgeConfig.getRadius();
+        Paint.FontMetrics fontMetrics = mBadgePaint.getFontMetrics();
+        float txtHeight = fontMetrics.descent - fontMetrics.ascent;
+
+        cx = getWidth() - radius;
+        cy = getHeight() / 2 - txtHeight / 2;
+        mBadgePaint.setStyle(Paint.Style.FILL);
+        mBadgePaint.setColor(mBadgeConfig.getBadgeColor());
+        canvas.drawCircle(cx, cy, radius, mBadgePaint);
+
+        //基线中间点的y轴计算公
+        int baseLineY = (int) (cy - fontMetrics.top / 2 - fontMetrics.bottom / 2);
+        mBadgePaint.setColor(mBadgeConfig.getTxtColor());
+        mBadgePaint.setTextSize(mBadgeConfig.getTxtColor());
+        mBadgePaint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText(String.valueOf(mBadgeNumer), cx, baseLineY, mBadgePaint);
+
+    }
 
 
     @Override
