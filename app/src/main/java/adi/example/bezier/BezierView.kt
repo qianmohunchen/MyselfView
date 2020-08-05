@@ -34,6 +34,7 @@ class BezierView @JvmOverloads constructor(
     init {
         mPaint = Paint()
         mPaint.isAntiAlias = true
+        mPaint.style=Paint.Style.STROKE
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -63,8 +64,11 @@ class BezierView @JvmOverloads constructor(
             mPaint.setColor(Color.GREEN)
             var path = Path()
             path.moveTo(startX, startY)
+            path.lineTo(startX,startY+80)
             path.quadTo(eventX, eventY, endX, endY)
             canvas.drawPath(path, mPaint)
+
+
         }
     }
 

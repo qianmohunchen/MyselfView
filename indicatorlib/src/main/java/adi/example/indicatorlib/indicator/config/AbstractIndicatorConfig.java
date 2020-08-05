@@ -1,12 +1,41 @@
 package adi.example.indicatorlib.indicator.config;
 
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
+
 import java.util.ArrayList;
 
 import adi.example.indicatorlib.model.IndicatorShapeType;
 
 public abstract class AbstractIndicatorConfig<T extends AbstractIndicatorConfig> {
 
+    /**
+     * 起点动画的插值器
+     */
+    private Interpolator startInterpolator = new LinearInterpolator();
+    /**
+     * 终点动画的插值器
+     */
+    private Interpolator endInterpolator = new LinearInterpolator();
+
     private int indicatorShapeType;
+
+    public Interpolator getStartInterpolator() {
+        return startInterpolator;
+    }
+
+    public void setStartInterpolator(Interpolator startInterpolator) {
+        this.startInterpolator = startInterpolator;
+    }
+
+    public Interpolator getEndInterpolator() {
+        return endInterpolator;
+    }
+
+    public void setEndInterpolator(Interpolator endInterpolator) {
+        this.endInterpolator = endInterpolator;
+    }
+
     /**
      * 颜色列表
      */

@@ -10,11 +10,11 @@ class BezierActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        leftBtn.setOnClickListener {
-            threeBezierView.isMoveLeft()
-        }
-        rightBtn.setOnClickListener {
-            threeBezierView.isMoveRight()
-        }
+//        leftBtn.setOnClickListener {
+//            threeBezierView.isMoveLeft()
+//        }
+//        rightBtn.setOnClickListener {
+//            threeBezierView.isMoveRight()
+//        }
     }
 }

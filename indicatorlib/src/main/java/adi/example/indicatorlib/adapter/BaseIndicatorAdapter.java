@@ -5,11 +5,17 @@ import android.database.DataSetObserver;
 
 import androidx.annotation.NonNull;
 
+import adi.example.indicatorlib.GlobalConfig;
 import adi.example.indicatorlib.indicator.config.AbstractIndicatorConfig;
 
 public abstract class BaseIndicatorAdapter<T extends AbstractIndicatorConfig> {
 
     private final DataSetObservable mObservable = new DataSetObservable();
+
+
+    public GlobalConfig getGlobalConfig() {
+        return GlobalConfig.factory();
+    }
 
     /**
      * 返回数量

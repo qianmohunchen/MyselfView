@@ -13,6 +13,18 @@
         android:layout_height="100px"
         android:background="@color/colorAccent" />
 
+    <adi.example.indicatorlib.GreatIndicator
+        android:id="@+id/greatIndicator2"
+        android:layout_width="match_parent"
+        android:layout_height="100px"
+        android:background="@color/white" />
+
+    <adi.example.indicatorlib.GreatIndicator
+        android:id="@+id/greatIndicator3"
+        android:layout_width="match_parent"
+        android:layout_height="100px"
+        android:background="@color/colorPrimaryDark" />
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"

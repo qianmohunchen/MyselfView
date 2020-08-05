@@ -1,5 +1,6 @@
 package adi.example.indicatorlib.adapter;
 
+import adi.example.indicatorlib.GlobalConfig;
 import adi.example.indicatorlib.title.AbstractTitleConfig;
 import adi.example.indicatorlib.title.badge.BadgeConfig;
 

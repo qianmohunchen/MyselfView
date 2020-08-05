@@ -23,6 +23,7 @@ import adi.example.indicatorlib.indicator.config.LineIndicatorConfig;
 import adi.example.indicatorlib.listener.OnPageChangedListener;
 import adi.example.indicatorlib.listener.OnScrollResultListener;
 import adi.example.indicatorlib.listener.OnTitleClickListener;
+import adi.example.indicatorlib.model.MeasureTitleViewPosition;
 import adi.example.indicatorlib.model.PositionInfo;
 import adi.example.indicatorlib.title.AbstractTitleConfig;
 import adi.example.indicatorlib.title.TextTitleView;
@@ -62,6 +63,10 @@ public class GreatIndicator extends FrameLayout implements View.OnClickListener,
      *
      */
     LineIndicatorView mLineIndicatorView;
+    /**
+     *
+     */
+    GlobalConfig mGlobalConfig;
 
 
     /**
@@ -105,6 +110,9 @@ public class GreatIndicator extends FrameLayout implements View.OnClickListener,
     private void initGlobalConfig() {
         if (mCalculationHelper == null) {
             mCalculationHelper = CalculationHelper.factory(this);
+        }
+        if (mAdapter != null) {
+            mGlobalConfig = mAdapter.getGlobalConfig();
         }
     }
 
@@ -212,7 +220,7 @@ public class GreatIndicator extends FrameLayout implements View.OnClickListener,
                 lp.gravity = Gravity.BOTTOM;
             }
         }
-        mLineIndicatorView.init((LineIndicatorConfig) indicatorConfig, mAdapter.getCount(), 0);
+        mLineIndicatorView.init(mGlobalConfig,(LineIndicatorConfig) indicatorConfig, mAdapter.getCount(), 0);
         mContentContainer.addView(mLineIndicatorView, lp);
     }
 
@@ -246,6 +254,11 @@ public class GreatIndicator extends FrameLayout implements View.OnClickListener,
             item.top = child.getTop();
             item.bottom = child.getBottom();
 
+            item.contentLeft = item.left;
+            item.contentRight = item.right;
+            item.contentTop = item.top;
+            item.contentBottom = item.bottom;
+
             int left = child.getLeft();
             int right = child.getRight();
             int top = child.getTop();
@@ -259,6 +272,7 @@ public class GreatIndicator extends FrameLayout implements View.OnClickListener,
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        mCalculationHelper.handlePageScrolled(position, positionOffset, positionOffsetPixels);
         final int curIndex = Math.min(mTitlePositions.size() - 1, position);
         final int nextIndex = Math.min(mTitlePositions.size() - 1, position + 1);
         mCurIndex = curIndex;
@@ -271,13 +285,16 @@ public class GreatIndicator extends FrameLayout implements View.OnClickListener,
         final int distance = (int) (preScroll + (nextScroll - preScroll) * positionOffset);
         mScrollView.smoothScrollTo(distance, 0);
         if (null != mLineIndicatorView) {
-            mLineIndicatorView.onPageScrolled(position,positionOffset,positionOffsetPixels);
+            mLineIndicatorView.onPageScrolled(position, positionOffset, positionOffsetPixels);
         }
     }
 
     @Override
     public void onPageSelected(int position) {
         mCalculationHelper.handlePageSelected(position);
+        if (mGlobalConfig != null && mGlobalConfig.isFollowFinger()) {
+            return;
+        }
         if (null != mLineIndicatorView) {
             mLineIndicatorView.onPageSelected(position);
         }

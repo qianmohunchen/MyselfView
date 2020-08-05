@@ -5,6 +5,7 @@ import adi.example.indicator.Constants.CHANNELS
 import adi.example.indicatorlib.adapter.GreatIndicatorAdapter
 import adi.example.indicatorlib.indicator.config.AbstractIndicatorConfig
 import adi.example.indicatorlib.indicator.config.LineIndicatorConfig
+import adi.example.indicatorlib.model.IndicatorShapeType
 import adi.example.indicatorlib.model.IndicatorWidthModel
 import adi.example.indicatorlib.title.TextTitleConfig
 import adi.example.indicatorlib.title.badge.BadgeConfig
@@ -29,7 +30,9 @@ class IndicatorActivity : AppCompatActivity() {
 
         mBadgeNumbers = ArrayList<Int>(mDataList.size)
         randomBadgeNumbers()
-        init1()
+//        init1()
+//        init2()
+        init3()
     }
 
     /**
@@ -59,7 +62,9 @@ class IndicatorActivity : AppCompatActivity() {
 
             override fun bindIndicatorConfig(): AbstractIndicatorConfig<out AbstractIndicatorConfig<*>> {
                 return LineIndicatorConfig.factory()
-                    .setRoundRadius(10)
+                    .setShapeType(IndicatorShapeType.ROUND_RECT)
+                    .setHeight(10)
+                    .setRoundRadius(5)
                     .setWidthModel(IndicatorWidthModel.MATCH_EDGE)
                     .setColor(Constants.randomIndicatorColor())
                     .setPendingBottom(10)
@@ -85,5 +90,94 @@ class IndicatorActivity : AppCompatActivity() {
 
         })
         greatIndicator.bindViewPager(viewpager)
+    }
+
+    fun init2() {
+        greatIndicator2.setAdapter(object : GreatIndicatorAdapter<TextTitleConfig>() {
+            override fun bindTitleConfig(): TextTitleConfig {
+                return TextTitleConfig.factory()
+                    .setNormalColors(Constants.normalTxtColors)
+                    .setSelectedColors(Constants.selectedTxtColors)
+                    .setPendingLeft(20)
+                    .setPendingRight(20)
+                    .setNormalSize(30)
+                    .setSelectedSize(40)
+            }
+
+            override fun getCount(): Int {
+                return CHANNELS.size
+            }
+
+            override fun bindIndicatorConfig(): AbstractIndicatorConfig<out AbstractIndicatorConfig<*>> {
+                return LineIndicatorConfig.factory()
+                    .setRadius(10)
+                    .setWidthModel(IndicatorWidthModel.WARP_CONTENT)
+                    .setPendingBottom(10)
+                    .setColor(Constants.randomIndicatorColor())
+            }
+
+            override fun getTitleName(position: Int): String {
+                return Constants.CHANNELS[position]
+            }
+
+            override fun bindBageConfig(position: Int): BadgeConfig {
+                return BadgeConfig.build()
+                    .setBadgeColor(Color.RED)
+                    .setRadius(15.0f)
+                    .setTxtColor(Color.WHITE)
+                    .setTxtSize(22.0f)
+            }
+
+            override fun getBadgeNumer(position: Int): Int {
+                return mBadgeNumbers.get(position)
+            }
+
+        })
+        greatIndicator2.bindViewPager(viewpager)
+    }
+
+    fun init3() {
+        greatIndicator3.setAdapter(object : GreatIndicatorAdapter<TextTitleConfig>() {
+            override fun bindTitleConfig(): TextTitleConfig {
+                return TextTitleConfig.factory()
+                    .setNormalColors(Constants.normalTxtColors)
+                    .setSelectedColors(Constants.selectedTxtColors)
+                    .setPendingLeft(20)
+                    .setPendingRight(20)
+                    .setNormalSize(30)
+                    .setSelectedSize(40)
+            }
+
+            override fun getCount(): Int {
+                return CHANNELS.size
+            }
+
+            override fun bindIndicatorConfig(): AbstractIndicatorConfig<out AbstractIndicatorConfig<*>> {
+                return LineIndicatorConfig.factory()
+                    .setRadius(10)
+                    .setWidthModel(IndicatorWidthModel.WARP_CONTENT)
+                    .setUseBezierEffect(true)
+                    .setPendingBottom(10)
+                    .setColor(Constants.randomIndicatorColor())
+            }
+
+            override fun getTitleName(position: Int): String {
+                return Constants.CHANNELS[position]
+            }
+
+            override fun bindBageConfig(position: Int): BadgeConfig {
+                return BadgeConfig.build()
+                    .setBadgeColor(Color.RED)
+                    .setRadius(15.0f)
+                    .setTxtColor(Color.WHITE)
+                    .setTxtSize(22.0f)
+            }
+
+            override fun getBadgeNumer(position: Int): Int {
+                return mBadgeNumbers.get(position)
+            }
+
+        })
+        greatIndicator3.bindViewPager(viewpager)
     }
 }

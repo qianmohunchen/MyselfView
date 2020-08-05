@@ -3,11 +3,13 @@ package adi.example.indicatorlib.indicator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.view.View;
 
 import java.util.List;
 
+import adi.example.indicatorlib.GlobalConfig;
 import adi.example.indicatorlib.indicator.config.LineIndicatorConfig;
 import adi.example.indicatorlib.listener.OnScrollResultListener;
 import adi.example.indicatorlib.model.IndicatorShapeType;
@@ -40,12 +42,29 @@ public class LineIndicatorView extends View implements OnScrollResultListener {
      * 画笔
      */
     private Paint mPaint;
+    /**
+     *
+     */
+    private GlobalConfig mGlobalConfig;
+
+    /**
+     * 贝塞尔曲线绘制路径
+     */
+    private Path mBezierPath;
+    //贝塞尔曲线所用变量
+    private float mLeftCircleRadius;
+    private float mLeftCircleX;
+    private float mRightCircleRadius;
+    private float mRightCircleX;
+    private int mMaxCircleRadius;
+    private int mMinCircleRadius;
 
     public LineIndicatorView(Context context) {
         super(context);
     }
 
-    public void init(LineIndicatorConfig config, int totalCount, int position) {
+    public void init(GlobalConfig globalConfig, LineIndicatorConfig config, int totalCount, int position) {
+        mGlobalConfig = globalConfig;
         mIndicatorConfig = config;
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.FILL);
@@ -56,6 +75,16 @@ public class LineIndicatorView extends View implements OnScrollResultListener {
     protected void onDraw(Canvas canvas) {
         if (mIndicatorConfig.getShapeType() == IndicatorShapeType.ROUND_RECT) {
             canvas.drawRoundRect(mLineRect, mIndicatorConfig.getRoundRadius(), mIndicatorConfig.getRoundRadius(), mPaint);
+        }
+        if (mIndicatorConfig.getShapeType() == IndicatorShapeType.CIRCLE) {
+            if (mIndicatorConfig.isUseBezierEffect() && null != mBezierPath) {
+                float y = mLineRect.top + mLineRect.height() / 2;
+                canvas.drawCircle(mLeftCircleX, y, mLeftCircleRadius, mPaint);
+                canvas.drawCircle(mRightCircleX, y, mRightCircleRadius, mPaint);
+                canvas.drawPath(mBezierPath, mPaint);
+            } else {
+                canvas.drawCircle(mLineRect.left + mLineRect.width() / 2, mLineRect.bottom - mLineRect.height(), mIndicatorConfig.getHeight(), mPaint);
+            }
         }
     }
 
@@ -78,6 +107,7 @@ public class LineIndicatorView extends View implements OnScrollResultListener {
         } else {
             positionInfo = mPositions.get(position);
         }
+
         //线上下坐标
         if (mIndicatorConfig.isTop()) {
             mLineRect.top = positionInfo.top + mIndicatorConfig.getPendingTop();
@@ -97,6 +127,7 @@ public class LineIndicatorView extends View implements OnScrollResultListener {
             mLineRect.left = positionInfo.left + ((positionInfo.getWidth() - mIndicatorConfig.getWidth()) >> 1);
             mLineRect.right = mLineRect.left + mIndicatorConfig.getWidth();
         }
+
     }
 
 
@@ -137,7 +168,31 @@ public class LineIndicatorView extends View implements OnScrollResultListener {
         nextRightX = next.right - mIndicatorConfig.getPendingRight();
         mLineRect.left = leftX + (nextLeftX - leftX) * positionOffset;
         mLineRect.right = rightX + (nextRightX - rightX) * positionOffset;
-        invalidate();
+
+        if (mIndicatorConfig.isUseBezierEffect()) {
+            mBezierPath.reset();
+            mMaxCircleRadius = getCircleDiameter() / 2;
+            mMinCircleRadius = (int) (mMaxCircleRadius * 0.8);
+            leftX = current.left + ((current.right - current.left) >> 1);
+            rightX = next.left + ((next.right - next.left) >> 1);
+            mLeftCircleX = leftX + (rightX - leftX) * mIndicatorConfig.getStartInterpolator().getInterpolation(positionOffset);
+            mRightCircleX = leftX + (rightX - leftX) * mIndicatorConfig.getEndInterpolator().getInterpolation(positionOffset);
+            mLeftCircleRadius = mMaxCircleRadius + (mMinCircleRadius - mMaxCircleRadius) * mIndicatorConfig.getEndInterpolator().getInterpolation(positionOffset);
+            mRightCircleRadius = mMinCircleRadius + (mMaxCircleRadius - mMinCircleRadius) * mIndicatorConfig.getStartInterpolator().getInterpolation(positionOffset);
+
+            float y = mLineRect.top + mLineRect.height() / 2;
+//            mBezierPath.moveTo(mRightCircleX, y);
+            mBezierPath.moveTo(mRightCircleX, y - mRightCircleRadius);
+            mBezierPath.quadTo(mRightCircleX + (mLeftCircleX - mRightCircleX) / 2.0f, y, mLeftCircleX, y - mLeftCircleRadius);
+            mBezierPath.lineTo(mLeftCircleX, y + mLeftCircleRadius);
+            mBezierPath.quadTo(mRightCircleX + (mLeftCircleX - mRightCircleX) / 2.0f, y, mRightCircleX, y + mRightCircleRadius);
+            mBezierPath.close();
+        }
+
+        if (mGlobalConfig.isFollowFinger()) {
+            invalidate();
+        }
+
     }
 
     public void onPageSelected(int position) {
@@ -145,11 +200,31 @@ public class LineIndicatorView extends View implements OnScrollResultListener {
         invalidate();
     }
 
+    /**
+     * 返回圆的直径
+     *
+     * @return
+     */
+    private int getCircleDiameter() {
+        int diameter;
+        if (mIndicatorConfig.getWidth() == 0) {
+            diameter = mIndicatorConfig.getHeight();
+        } else if (mIndicatorConfig.getHeight() == 0) {
+            diameter = mIndicatorConfig.getWidth();
+        } else {
+            diameter = Math.max(mIndicatorConfig.getHeight(), mIndicatorConfig.getWidth());
+        }
+        return diameter;
+    }
+
     public void updateTitlePositions(List<PositionInfo> positions) {
         boolean isInit = null == mPositions || mPositions.isEmpty();
         mPositions = positions;
         if (isInit) {
             updateRect(0);
+        }
+        if (mIndicatorConfig.isUseBezierEffect()) {
+            mBezierPath = new Path();
         }
     }
 

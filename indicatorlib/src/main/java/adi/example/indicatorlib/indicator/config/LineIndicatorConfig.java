@@ -1,7 +1,5 @@
 package adi.example.indicatorlib.indicator.config;
 
-import android.graphics.Color;
-
 import java.util.ArrayList;
 
 import adi.example.indicatorlib.model.IndicatorShapeType;
@@ -82,12 +80,7 @@ public class LineIndicatorConfig extends AbstractIndicatorConfig<LineIndicatorCo
      */
     public static LineIndicatorConfig factory() {
         LineIndicatorConfig config = new LineIndicatorConfig();
-        config.setShapeType(IndicatorShapeType.ROUND_RECT)
-                .setWidthModel(IndicatorWidthModel.MATCH_EDGE)
-                .setHeight(10)
-                .setRoundRadius(5)
-                .setPendingTop(10)
-                .setColor(Color.WHITE);
+
         return config;
     }
 
@@ -262,6 +255,11 @@ public class LineIndicatorConfig extends AbstractIndicatorConfig<LineIndicatorCo
         return this;
     }
 
+    public LineIndicatorConfig setUseBezierEffect(boolean useBezierEffect) {
+        this.useBezierEffect = useBezierEffect;
+        return this;
+    }
+
     /**
      * 是否需要尖角<br>
      * 设置为true后，线宽度模式、线宽度、贝塞尔曲线效果皆无效
@@ -341,6 +339,7 @@ public class LineIndicatorConfig extends AbstractIndicatorConfig<LineIndicatorCo
     public boolean isUseBezierEffect() {
         return useBezierEffect;
     }
+
 
     public boolean isTop() {
         return isShowTop;
